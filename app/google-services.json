@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "701304014795",
+    "firebase_url": "https://sk-pizza-default-rtdb.firebaseio.com",
+    "project_id": "sk-pizza",
+    "storage_bucket": "sk-pizza.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701304014795:android:5e8a99166a7966b08b984e",
+        "android_client_info": {
+          "package_name": "com.skpizza.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMpMT1SX58lQTtpNl7QOjXwVftdgh854E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
