@@ -819,5 +819,18 @@
         history.pushState({ initial: true }, '');
     });
 </script>
+    <script>
+document.addEventListener("click", function(e) {
+    // Target all interactive elements in your app
+    if (e.target.closest(
+        ".action-btn, .whatsapp-btn, .call-btn, .favorite-card-btn, " +
+        ".size-btn, .menu-btn, .menu-item, .cat-item, .favorite-icon, button"
+    )) {
+        if (window.Android) {
+            Android.notifyClick();
+        }
+    }
+});
+</script>
 </body>
 </html>
