@@ -1,1 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.skpizza.app">
 
+    <!-- 🌐 Internet & Network -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 📞 Optional (only if you really use direct call feature) -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!-- 📢 AdMob Permission -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true">
+
+        <!-- ✅ AdMob App ID (VERY IMPORTANT) -->
+        <!-- 🔥 REPLACE WITH YOUR REAL ADMOB APP ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
+
+        <!-- 🚀 Splash / Intro -->
+        <activity
+            android:name=".IntroActivity"
+            android:theme="@style/AppTheme.FullScreen"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 🌐 Main WebView -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:usesCleartextTraffic="true"
+            android:theme="@style/AppTheme.FullScreen" />
+
+        <!-- ℹ️ About Screen -->
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+
+    </application>
+
+</manifest>
