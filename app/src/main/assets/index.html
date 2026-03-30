@@ -15,8 +15,8 @@
         window.googletag = window.googletag || {cmd: []};
 
         // ⚠️ REPLACE WITH YOUR REAL AD UNIT IDs ⚠️
-        const BANNER_AD_UNIT = '/YOUR_NETWORK_ID/YOUR_BANNER_AD_UNIT_ID';      // e.g., '/6355419/Travel/Europe/France/Paris'
-        const INTERSTITIAL_AD_UNIT = '/YOUR_NETWORK_ID/YOUR_INTERSTITIAL_AD_UNIT_ID';
+        const BANNER_AD_UNIT = 'ca-app-pub-3940256099942544/6300978111';      // e.g., '/6355419/Travel/Europe/France/Paris'
+        const INTERSTITIAL_AD_UNIT = 'ca-app-pub-3940256099942544/1033173712';
 
         // Pre‑define the banner slot (will be reused for multiple banners)
         let bannerSlots = [];
@@ -480,7 +480,7 @@
         { id: 5, name: "Hot & Spicy Pizza", category: "pizza", image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 6, name: "Marian Pizza", category: "pizza", image: "https://i.ibb.co/ymJkV41c/margherita-pizza-1678735925129-1280.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 112, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 7, name: "Chicken Pizza", category: "pizza", image: "https://images.pexels.com/photos/2762942/pexels-photo-2762942.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 178, sizes: { small:500, medium:1000, large:1500, family:1900 } },
-        { id: 8, name: "Cheese Lover Pizza", category: "pizza", image: "https://i.ibb.co/GQvpfQp7/images-19.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 312, sizes: { small:500, medium:1000, large:1500, family:1800 } },
+        { id: 8, name: "Cheese Lover Pizza", category: "pizza", image: "https://i.ibb.co/GQvpfQ7p/images-19.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 312, sizes: { small:500, medium:1000, large:1500, family:1800 } },
         { id: 9, name: "Chicken Achari Pizza", category: "pizza", image: "https://i.ibb.co/4w7yPnwC/images-20.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 76, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 10, name: "Pizza Donor", category: "pizza", image: "https://images.pexels.com/photos/2619967/pexels-photo-2619967.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 11, name: "Malai Boti Pizza", category: "pizza", image: "https://i.ibb.co/G4kTJMGm/images-46.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 145, sizes: { small:650, medium:1150, large:1650, family:2100 } },
@@ -857,7 +857,7 @@
         try {
             const res = await fetch("https://raw.githubusercontent.com/KhadamTech/skpizza-update/main/update.json");
             const data = await res.json();
-            const CURRENT_VERSION = 41;
+            const CURRENT_VERSION = 42;
             if (data.latestVersionCode > CURRENT_VERSION) {
                 const modal = document.createElement('div');
                 modal.className = 'update-modal';
