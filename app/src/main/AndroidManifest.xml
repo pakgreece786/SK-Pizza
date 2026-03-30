@@ -6,10 +6,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- 📞 Optional (only if you really use direct call feature) -->
+    <!-- 📞 Optional (only if used) -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
-    <!-- 📢 AdMob Permission -->
+    <!-- 📢 AdMob (Android 13+) -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <application
@@ -20,13 +20,12 @@
         android:usesCleartextTraffic="true"
         android:hardwareAccelerated="true">
 
-        <!-- ✅ AdMob App ID (VERY IMPORTANT) -->
-        <!-- 🔥 REPLACE WITH YOUR REAL ADMOB APP ID -->
+        <!-- ✅ AdMob App ID (KEEP TEST FOR NOW) -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713"/>
 
-        <!-- 🚀 Splash / Intro -->
+        <!-- 🚀 Splash -->
         <activity
             android:name=".IntroActivity"
             android:theme="@style/AppTheme.FullScreen"
@@ -37,16 +36,16 @@
             </intent-filter>
         </activity>
 
-        <!-- 🌐 Main WebView -->
+        <!-- 🌐 Main -->
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|screenSize"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:usesCleartextTraffic="true"
             android:theme="@style/AppTheme.FullScreen" />
 
-        <!-- ℹ️ About Screen -->
+        <!-- ℹ️ About -->
         <activity
             android:name=".AboutActivity"
             android:exported="false"
