@@ -9,44 +9,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- Google Ad Manager (GPT) – for AdMob ads in WebView -->
+    <!-- Google Ad Manager (GPT) – AdMob ads in WebView -->
     <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
     <script>
         window.googletag = window.googletag || {cmd: []};
-        
-        // ⚠️ REPLACE THESE WITH YOUR REAL AD UNIT IDs FROM AD MANAGER (linked to AdMob) ⚠️
-        const BANNER_AD_UNIT = 'ca-app-pub-3940256099942544/6300978111';      // e.g., '/6355419/Travel/Europe/France/Paris'
-        const INTERSTITIAL_AD_UNIT = 'ca-app-pub-3940256099942544/1033173712';
-        
+
+        // ⚠️ REPLACE WITH YOUR REAL AD UNIT IDs ⚠️
+        const BANNER_AD_UNIT = '/YOUR_NETWORK_ID/YOUR_BANNER_AD_UNIT_ID';      // e.g., '/6355419/Travel/Europe/France/Paris'
+        const INTERSTITIAL_AD_UNIT = '/YOUR_NETWORK_ID/YOUR_INTERSTITIAL_AD_UNIT_ID';
+
+        // Pre‑define the banner slot (will be reused for multiple banners)
+        let bannerSlots = [];
+        // Interstitial slot (single)
+        let interstitialSlot = null;
+
         googletag.cmd.push(function() {
-            // Banner ad (320x50)
-            var bannerSlot = googletag.defineSlot(BANNER_AD_UNIT, [320, 50], 'admob-banner').addService(googletag.pubads());
-            // Interstitial ad (full screen)
-            var interstitialSlot = googletag.defineOutOfPageSlot(INTERSTITIAL_AD_UNIT, googletag.enums.OutOfPageFormat.INTERSTITIAL);
+            // Pre‑define interstitial slot
+            interstitialSlot = googletag.defineOutOfPageSlot(INTERSTITIAL_AD_UNIT, googletag.enums.OutOfPageFormat.INTERSTITIAL);
             if (interstitialSlot) interstitialSlot.addService(googletag.pubads());
-            
+
+            // We'll define banner slots dynamically later
             googletag.pubads().enableSingleRequest();
             googletag.enableServices();
-            
-            window.adSlots = { banner: bannerSlot, interstitial: interstitialSlot };
         });
-        
-        // Function to request and show interstitial
+
+        // Function to show interstitial
         function showInterstitial() {
-            if (window.adSlots && window.adSlots.interstitial) {
+            if (interstitialSlot) {
                 googletag.cmd.push(function() {
-                    googletag.display(window.adSlots.interstitial);
+                    googletag.display(interstitialSlot);
                 });
             } else {
                 console.warn("Interstitial slot not ready");
             }
         }
-        
+
         // Click counter for interstitial (every 3 clicks)
         let clickCounter = 0;
         function handleGlobalClick(e) {
-            // Ignore clicks on the banner ad area itself (avoid infinite loop)
-            if (e.target.closest('#admob-banner')) return;
+            // Ignore clicks inside any banner container
+            if (e.target.closest('.banner-container')) return;
             clickCounter++;
             if (clickCounter % 3 === 0) {
                 showInterstitial();
@@ -272,15 +274,15 @@
         .update-modal-content button { background: #e31818; color: white; border: none; padding: 12px 24px; border-radius: 60px; font-weight: 700; font-size: 0.9rem; cursor: pointer; width: 100%; }
         
         /* Ad banner container */
-        .admob-banner-container {
+        .banner-container {
             text-align: center;
             background: #f9f9f9;
             padding: 8px 0;
-            margin-top: 8px;
-            border-top: 1px solid #eee;
-            border-bottom: 1px solid #eee;
+            margin: 12px 0;
+            border-radius: 12px;
+            clear: both;
         }
-        #admob-banner {
+        .banner-ad {
             min-height: 50px;
             width: 100%;
             display: flex;
@@ -427,19 +429,6 @@
     <div class="section-header"><h3>🔥 Menu</h3><span style="font-size:0.7rem; color:#FF6B3D;">⭐ Rate & Favorite</span></div>
     <div id="menuGrid" class="menu-grid"></div>
     
-    <!-- AdMob Banner (GPT) -->
-    <div class="admob-banner-container">
-        <div id="admob-banner">
-            <script>
-                googletag.cmd.push(function() {
-                    if (window.adSlots && window.adSlots.banner) {
-                        googletag.display(window.adSlots.banner);
-                    }
-                });
-            </script>
-        </div>
-    </div>
-    
     <!-- FOOTER SECTION -->
     <div class="footer">
         <h4><i class="far fa-clock"></i> Opening Hours</h4>
@@ -458,7 +447,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // ========== REPLACE WITH YOUR ACTUAL FIREBASE PROJECT DETAILS ==========
+    // Firebase Config (same as before)
     const firebaseConfig = {
         apiKey: "AIzaSyAI5YMKKFJFEqwY8fXJalRkSbbDkB5toUs",
         authDomain: "sk-pizza.firebaseapp.com",
@@ -469,7 +458,6 @@
         appId: "1:701304014795:web:39a63003e9cdb17f8b984e",
         measurementId: "G-0D3G1J35GB"
     };
-    // =====================================================================
 
     let db = null;
     let useFirebase = false;
@@ -691,7 +679,11 @@
         const grid = document.getElementById('menuGrid');
         if (filtered.length === 0) { grid.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">No items found 😢</div>'; return; }
 
-        grid.innerHTML = filtered.map(item => {
+        // Build HTML for items, inserting banners after every 3 items
+        let itemsHtml = '';
+        let bannerCount = 0;
+        for (let i = 0; i < filtered.length; i++) {
+            const item = filtered[i];
             let priceHtml = '', sizeHtml = '', dealHtml = '';
             let itemImage = item.image;
             if (item.category === 'deals') itemImage = FALLBACK_IMAGE;
@@ -705,7 +697,7 @@
             }
             if (item.dealItems) dealHtml = `<div class="deal-items">${item.dealItems.map(d => `<span>• ${d}</span>`).join('')}</div>`;
             const isFav = favorites.includes(item.id);
-            return `
+            itemsHtml += `
                 <div class="food-card">
                     <img class="card-img" src="${itemImage}" alt="${item.name}" loading="lazy" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'">
                     <div class="card-content">
@@ -720,8 +712,30 @@
                         </div>
                     </div>
                 </div>`;
-        }).join('');
+            // Insert banner after every 3 items (except last)
+            if ((i + 1) % 3 === 0 && i !== filtered.length - 1) {
+                itemsHtml += `<div class="banner-container" id="banner-${bannerCount}">
+                                <div class="banner-ad"></div>
+                              </div>`;
+                bannerCount++;
+            }
+        }
+        grid.innerHTML = itemsHtml;
 
+        // Now define and display banner slots
+        if (bannerCount > 0) {
+            googletag.cmd.push(function() {
+                for (let i = 0; i < bannerCount; i++) {
+                    const slot = googletag.defineSlot(BANNER_AD_UNIT, [320, 50], `banner-${i}`);
+                    if (slot) {
+                        slot.addService(googletag.pubads());
+                        googletag.display(slot);
+                    }
+                }
+            });
+        }
+
+        // Attach event listeners for dynamic elements
         document.querySelectorAll('.stars i').forEach(star => {
             star.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -791,10 +805,20 @@
         });
     });
 
+    // Back button handling – show exit confirmation
     window.addEventListener('popstate', function(event) {
-        if (menuOpen) { closeMenu(); history.pushState({ menuOpen: false }, ''); return; }
+        if (menuOpen) {
+            closeMenu();
+            history.pushState({ menuOpen: false }, '');
+            return;
+        }
         const confirmExit = confirm("Do you want to exit the app?");
-        if (!confirmExit) history.pushState({ menuOpen: false }, '');
+        if (confirmExit) {
+            // Let the WebView close – do not push new state
+        } else {
+            // User cancelled, push a new state to prevent the popstate from exiting
+            history.pushState({ menuOpen: false }, '');
+        }
     });
 
     function clearSearch() { renderMenu(); }
