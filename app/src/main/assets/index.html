@@ -1,1 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>SK PIZZA | Fresh Fast Food</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <!-- Google Ad Manager (GPT) – for AdMob ads in WebView -->
+    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+    <script>
+        window.googletag = window.googletag || {cmd: []};
+        
+        // ⚠️ REPLACE THESE WITH YOUR REAL AD UNIT IDs FROM AD MANAGER (linked to AdMob) ⚠️
+        const BANNER_AD_UNIT = 'ca-app-pub-3940256099942544/6300978111';      // e.g., '/6355419/Travel/Europe/France/Paris'
+        const INTERSTITIAL_AD_UNIT = 'ca-app-pub-3940256099942544/1033173712';
+        
+        googletag.cmd.push(function() {
+            // Banner ad (320x50)
+            var bannerSlot = googletag.defineSlot(BANNER_AD_UNIT, [320, 50], 'admob-banner').addService(googletag.pubads());
+            // Interstitial ad (full screen)
+            var interstitialSlot = googletag.defineOutOfPageSlot(INTERSTITIAL_AD_UNIT, googletag.enums.OutOfPageFormat.INTERSTITIAL);
+            if (interstitialSlot) interstitialSlot.addService(googletag.pubads());
+            
+            googletag.pubads().enableSingleRequest();
+            googletag.enableServices();
+            
+            window.adSlots = { banner: bannerSlot, interstitial: interstitialSlot };
+        });
+        
+        // Function to request and show interstitial
+        function showInterstitial() {
+            if (window.adSlots && window.adSlots.interstitial) {
+                googletag.cmd.push(function() {
+                    googletag.display(window.adSlots.interstitial);
+                });
+            } else {
+                console.warn("Interstitial slot not ready");
+            }
+        }
+        
+        // Click counter for interstitial (every 3 clicks)
+        let clickCounter = 0;
+        function handleGlobalClick(e) {
+            // Ignore clicks on the banner ad area itself (avoid infinite loop)
+            if (e.target.closest('#admob-banner')) return;
+            clickCounter++;
+            if (clickCounter % 3 === 0) {
+                showInterstitial();
+            }
+        }
+        document.addEventListener('click', handleGlobalClick);
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #fff5e8 0%, #ffe8d4 100%); padding: 0; }
+        .app-container { max-width: 480px; margin: 0 auto; background: #ffffff; min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+        .brand-header { background: linear-gradient(135deg, #e31818 0%, #b91c1c 100%); padding: 16px 20px; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .brand-info h1 { font-size: 1.5rem; font-weight: 800; color: white; letter-spacing: -0.5px; }
+        .brand-info p { font-size: 0.7rem; color: rgba(255,255,255,0.85); font-weight: 500; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .action-btn { background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); padding: 8px 16px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s; }
+        .action-btn:active { background: rgba(255,255,255,0.35); }
+        .favorite-icon { background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; color: white; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s; }
+        .favorite-icon.active { background: #ffeb3b; color: #e31818; }
+        /* Menu button and overlay */
+        .menu-btn {
+            background: rgba(255,255,255,0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: background 0.2s;
+        }
+        .menu-btn:active { background: rgba(255,255,255,0.35); }
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: none;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+        .menu-panel {
+            background: white;
+            width: 260px;
+            margin-top: 70px;
+            margin-right: 16px;
+            border-radius: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: slideIn 0.2s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .menu-item {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2c2c2c;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: #f5f0eb; }
+        .menu-item i { width: 24px; color: #FF6B3D; font-size: 1.1rem; }
+        
+        .hot-items-section {
+            padding: 12px 16px 4px;
+        }
+        .hot-items-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #e31818;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hot-items-title i {
+            font-size: 1rem;
+            color: #FF6B3D;
+        }
+        .hot-items-grid {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            padding-bottom: 4px;
+        }
+        .hot-items-grid::-webkit-scrollbar {
+            height: 3px;
+        }
+        .hot-item-card {
+            min-width: 100px;
+            background: linear-gradient(145deg, #fff9f0, #ffe6d5);
+            border-radius: 20px;
+            padding: 8px 6px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(255,107,61,0.1);
+            border: 1px solid rgba(255,107,61,0.2);
+            transition: transform 0.2s;
+            flex: 1;
+        }
+        .hot-item-card:active {
+            transform: scale(0.97);
+        }
+        .hot-item-icon {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+            color: #FF6B3D;
+        }
+        .hot-item-name {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #2c2c2c;
+            margin-bottom: 4px;
+        }
+        .hot-item-price {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #e31818;
+            background: rgba(255,255,255,0.8);
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 30px;
+            margin-top: 4px;
+        }
+        .size-prices {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            margin-top: 4px;
+        }
+        .size-price {
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: rgba(255,107,61,0.1);
+            padding: 2px 6px;
+            border-radius: 20px;
+            color: #FF6B3D;
+            display: inline-block;
+            width: fit-content;
+        }
+        .size-price span {
+            font-weight: 800;
+        }
+        
+        .delivery-banner { background: #e8f5e9; margin: 8px 16px; padding: 10px 16px; border-radius: 20px; display: flex; align-items: center; gap: 10px; font-size: 0.7rem; font-weight: 600; color: #2e7d32; border-left: 4px solid #4caf50; }
+        .categories { padding: 0 16px 20px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: thin; }
+        .categories::-webkit-scrollbar { height: 3px; }
+        .cat-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 70px; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        .cat-item.active { opacity: 1; }
+        .cat-icon { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); width: 55px; height: 55px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; transition: all 0.2s; overflow: hidden; }
+        .cat-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 28px; }
+        .cat-item.active .cat-icon { background: linear-gradient(135deg, #FF6B3D 0%, #FF3B1F 100%); box-shadow: 0 6px 15px rgba(255,107,61,0.4); }
+        .cat-item span { font-size: 0.7rem; font-weight: 600; color: #666; }
+        .cat-item.active span { color: #FF6B3D; }
+        .section-header { padding: 0 16px; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+        .section-header h3 { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, #FF6B3D, #FF3B1F); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .menu-grid { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 18px; }
+        .food-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border: 1px solid rgba(255,107,61,0.2); transition: box-shadow 0.2s; }
+        .food-card:hover { box-shadow: 0 12px 28px rgba(255,107,61,0.2); }
+        .card-img { width: 100%; height: 160px; object-fit: cover; background: #f5f0eb; }
+        .card-content { padding: 14px 16px 16px; }
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .item-name { font-size: 1rem; font-weight: 800; color: #2c2c2c; }
+        .price { font-weight: 800; background: linear-gradient(135deg, #FF6B3D, #FF3B1F); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1rem; }
+        .rating { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+        .stars i { font-size: 0.8rem; cursor: pointer; margin-right: 2px; transition: color 0.1s; }
+        .stars i.fas.fa-star { color: #FFB800; }
+        .stars i.far.fa-star { color: #ddd; }
+        .rating-value { font-size: 0.7rem; font-weight: 700; color: #FFB800; }
+        .rating-count { font-size: 0.7rem; font-weight: 600; color: #FF6B3D; background: #FFF5E8; padding: 2px 8px; border-radius: 30px; margin-left: 4px; }
+        .delivery-info { display: flex; align-items: center; gap: 12px; margin: 10px 0; font-size: 0.7rem; color: #FF6B3D; font-weight: 600; background: #FFF5E8; padding: 6px 12px; border-radius: 30px; width: fit-content; }
+        .size-options { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+        .size-btn { background: #f5f0eb; border: none; padding: 6px 16px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; color: #666; cursor: pointer; transition: background 0.2s; }
+        .size-btn.selected { background: linear-gradient(135deg, #FF6B3D, #FF3B1F); color: white; }
+        /* Two-button layout (WhatsApp + Call) + favorite */
+        .action-buttons { display: flex; gap: 10px; margin-top: 12px; }
+        .whatsapp-btn, .call-btn, .favorite-card-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        .whatsapp-btn { background: linear-gradient(135deg, #25D366, #128C7E); color: white; box-shadow: 0 2px 6px rgba(37,211,102,0.2); }
+        .whatsapp-btn:active { transform: scale(0.97); background: #128C7E; }
+        .call-btn { background: linear-gradient(135deg, #007bff, #0056b3); color: white; box-shadow: 0 2px 6px rgba(0,123,255,0.2); }
+        .call-btn:active { transform: scale(0.97); background: #0056b3; }
+        .favorite-card-btn { background: #f5f0eb; color: #FF6B3D; border: 1px solid #ffe0cc; }
+        .favorite-card-btn.active { background: linear-gradient(135deg, #FF6B3D, #FF3B1F); color: white; border: none; }
+        .favorite-card-btn:active { transform: scale(0.97); }
+        .deal-items { font-size: 0.65rem; color: #FF6B3D; margin: 5px 0; background: #fff5e8; padding: 8px 12px; border-radius: 20px; line-height: 1.4; }
+        .deal-items span { display: block; margin: 2px 0; }
+        .update-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(5px); }
+        .update-modal-content { background: white; border-radius: 32px; padding: 28px 24px; max-width: 300px; text-align: center; animation: modalFadeIn 0.3s ease; }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .update-modal-content h3 { font-size: 1.4rem; color: #e31818; margin-bottom: 12px; }
+        .update-modal-content p { font-size: 0.9rem; color: #555; margin-bottom: 24px; }
+        .update-modal-content button { background: #e31818; color: white; border: none; padding: 12px 24px; border-radius: 60px; font-weight: 700; font-size: 0.9rem; cursor: pointer; width: 100%; }
+        
+        /* Ad banner container */
+        .admob-banner-container {
+            text-align: center;
+            background: #f9f9f9;
+            padding: 8px 0;
+            margin-top: 8px;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+        #admob-banner {
+            min-height: 50px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Footer styles */
+        .footer {
+            background: #fffaf5;
+            border-top: 1px solid #ffe0cc;
+            padding: 24px 20px 32px;
+            margin-top: 16px;
+            text-align: center;
+        }
+        .footer h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #e31818;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .footer p {
+            font-size: 0.8rem;
+            color: #5a5a5a;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .footer .hours {
+            background: #fff0e6;
+            padding: 12px;
+            border-radius: 20px;
+            margin: 12px 0;
+        }
+        .footer .hours p {
+            margin: 4px 0;
+            font-weight: 500;
+        }
+        .footer .address {
+            font-weight: 500;
+            color: #FF6B3D;
+            background: #fff0e6;
+            padding: 12px;
+            border-radius: 20px;
+        }
+        .footer i {
+            color: #FF6B3D;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="brand-header">
+        <div class="brand-info"><h1>SK PIZZA</h1><p>fast • fresh • flavour</p></div>
+        <div class="header-actions">
+            <div class="action-btn" id="orderHeaderBtn"><i class="fas fa-shopping-cart"></i> ORDER</div>
+            <div class="action-btn" id="callHeaderBtn"><i class="fas fa-phone-alt"></i> CALL</div>
+            <div class="favorite-icon" id="favoriteHeaderIcon"><i class="fas fa-heart"></i></div>
+            <div class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></div>
+        </div>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay">
+        <div class="menu-panel">
+            <div class="menu-item" data-action="home"><i class="fas fa-home"></i> Home</div>
+            <div class="menu-item" data-action="more-apps"><i class="fas fa-th-large"></i> More App</div>
+            <div class="menu-item" data-action="rate-us"><i class="fas fa-star"></i> Rate Us</div>
+            <div class="menu-item" data-action="policy"><i class="fas fa-shield-alt"></i> App Policy</div>
+        </div>
+    </div>
+    
+    <!-- Hot Items Section -->
+    <div class="hot-items-section">
+        <div class="hot-items-title">
+            <i class="fas fa-fire"></i> Hot Items
+            <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.7rem;"></i>
+        </div>
+        <div class="hot-items-grid">
+            <div class="hot-item-card">
+                <div class="hot-item-icon"><i class="fas fa-seedling"></i></div>
+                <div class="hot-item-name">Russian Salad</div>
+                <div class="size-prices">
+                    <span class="size-price">M: <span>PKR 500</span></span>
+                    <span class="size-price">L: <span>PKR 1000</span></span>
+                </div>
+            </div>
+            <div class="hot-item-card">
+                <div class="hot-item-icon"><i class="fas fa-drumstick-bite"></i></div>
+                <div class="hot-item-name">Wings (10ps)</div>
+                <div class="hot-item-price"><span>PKR 600</span></div>
+            </div>
+            <div class="hot-item-card">
+                <div class="hot-item-icon"><i class="fas fa-utensils"></i></div>
+                <div class="hot-item-name">Nuggets (10ps)</div>
+                <div class="hot-item-price"><span>PKR 500</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="delivery-banner"><i class="fas fa-truck"></i><span>Free delivery on orders above PKR 1000! 🎁</span></div>
+    <div class="categories" id="categories">
+        <div class="cat-item active" data-cat="popular">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Popular" loading="lazy"></div>
+            <span>Popular</span>
+        </div>
+        <div class="cat-item" data-cat="pizza">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/4109138/pexels-photo-4109138.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Pizza"></div>
+            <span>Pizza</span>
+        </div>
+        <div class="cat-item" data-cat="burger">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/2983098/pexels-photo-2983098.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Burger"></div>
+            <span>Burger</span>
+        </div>
+        <div class="cat-item" data-cat="pasta">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Pasta"></div>
+            <span>Pasta</span>
+        </div>
+        <div class="cat-item" data-cat="fries">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Fries"></div>
+            <span>Fries</span>
+        </div>
+        <div class="cat-item" data-cat="sandwich">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/1600727/pexels-photo-1600727.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Sandwich"></div>
+            <span>Sandwich</span>
+        </div>
+        <div class="cat-item" data-cat="shawarma">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/3186654/pexels-photo-3186654.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Shawarma"></div>
+            <span>Shawarma</span>
+        </div>
+        <div class="cat-item" data-cat="paratha">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/541216/pexels-photo-541216.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Paratha"></div>
+            <span>Paratha</span>
+        </div>
+        <div class="cat-item" data-cat="deals">
+            <div class="cat-icon"><img src="https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" alt="Deals"></div>
+            <span>Deals</span>
+        </div>
+    </div>
+    <div class="section-header"><h3>🔥 Menu</h3><span style="font-size:0.7rem; color:#FF6B3D;">⭐ Rate & Favorite</span></div>
+    <div id="menuGrid" class="menu-grid"></div>
+    
+    <!-- AdMob Banner (GPT) -->
+    <div class="admob-banner-container">
+        <div id="admob-banner">
+            <script>
+                googletag.cmd.push(function() {
+                    if (window.adSlots && window.adSlots.banner) {
+                        googletag.display(window.adSlots.banner);
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    
+    <!-- FOOTER SECTION -->
+    <div class="footer">
+        <h4><i class="far fa-clock"></i> Opening Hours</h4>
+        <div class="hours">
+            <p><i class="fas fa-calendar-alt"></i> Monday - Sunday: 11:55 AM - 11:55 PM</p>
+            <p><i class="fas fa-mosque"></i> Friday : 02:00 PM - 11:55 PM</p>
+        </div>
+        <div class="address">
+            <i class="fas fa-map-marker-alt"></i> SK PIZZA Restaurant<br>
+            📍 Main Stop Sook Kalan, Near Telenor Tower, Jalal Pur Jattan Road, Gujrat.
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ========== REPLACE WITH YOUR ACTUAL FIREBASE PROJECT DETAILS ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyAI5YMKKFJFEqwY8fXJalRkSbbDkB5toUs",
+        authDomain: "sk-pizza.firebaseapp.com",
+        databaseURL: "https://sk-pizza-default-rtdb.firebaseio.com",
+        projectId: "sk-pizza",
+        storageBucket: "sk-pizza.firebasestorage.app",
+        messagingSenderId: "701304014795",
+        appId: "1:701304014795:web:39a63003e9cdb17f8b984e",
+        measurementId: "G-0D3G1J35GB"
+    };
+    // =====================================================================
+
+    let db = null;
+    let useFirebase = false;
+    try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        useFirebase = true;
+        console.log("Firebase Firestore initialized");
+    } catch (e) {
+        console.warn("Firebase init failed, using localStorage", e);
+    }
+
+    // -------------------- MENU DATA (full) --------------------
+    const menuItems = [
+        // PIZZAS (18 items with sizes)
+        { id: 1, name: "Chicken Tikka Pizza", category: "pizza", image: "https://i.ibb.co/VYB9yJSP/1jpeg-ezgif-com-jpg-to-webp-converter.webp?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 128, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 2, name: "Chicken Fajita Pizza", category: "pizza", image: "https://i.ibb.co/nNPky9H6/2.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 95, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 3, name: "Vegetable Pizza", category: "pizza", image: "https://images.pexels.com/photos/803290/pexels-photo-803290.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.3, ratingCount: 156, sizes: { small:500, medium:1000, large:1500, family:1800 } },
+        { id: 4, name: "Super Supreme Pizza", category: "pizza", image: "https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 210, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 5, name: "Hot & Spicy Pizza", category: "pizza", image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 6, name: "Marian Pizza", category: "pizza", image: "https://i.ibb.co/ymJkV41c/margherita-pizza-1678735925129-1280.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 112, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 7, name: "Chicken Pizza", category: "pizza", image: "https://images.pexels.com/photos/2762942/pexels-photo-2762942.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 178, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 8, name: "Cheese Lover Pizza", category: "pizza", image: "https://i.ibb.co/GQvpfQp7/images-19.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 312, sizes: { small:500, medium:1000, large:1500, family:1800 } },
+        { id: 9, name: "Chicken Achari Pizza", category: "pizza", image: "https://i.ibb.co/4w7yPnwC/images-20.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 76, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 10, name: "Pizza Donor", category: "pizza", image: "https://images.pexels.com/photos/2619967/pexels-photo-2619967.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
+        { id: 11, name: "Malai Boti Pizza", category: "pizza", image: "https://i.ibb.co/G4kTJMGm/images-46.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 145, sizes: { small:650, medium:1150, large:1650, family:2100 } },
+        { id: 12, name: "Lazania Pizza", category: "pizza", image: "https://i.ibb.co/whbx3H7c/images-47.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 98, sizes: { small:600, medium:1150, large:1700, family:2100 } },
+        { id: 13, name: "Chicken Tandori Pizza", category: "pizza", image: "https://i.ibb.co/fYxdC4xV/images-48.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 123, sizes: { small:600, medium:1050, large:1600, family:2050 } },
+        { id: 14, name: "Peproni Pizza", category: "pizza", image: "https://i.ibb.co/3YkbY2Mj/images-49.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 267, sizes: { small:600, medium:1050, large:1600, family:2050 } },
+        { id: 15, name: "SK Special Pizza", category: "pizza", image: "https://i.ibb.co/G44LzRd4/images-50.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.9, ratingCount: 345, sizes: { small:650, medium:1150, large:1650, family:2100 } },
+        { id: 16, name: "Kebab Crust Pizza", category: "pizza", image: "https://i.ibb.co/qM6fCvMn/bf0f9ee5-3be8-4930-a63b-88195be75af7.webp?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 87, sizes: { medium:1200, large:1700, family:2350 } },
+        { id: 17, name: "Crown Crust Pizza", category: "pizza", image: "https://i.ibb.co/PZrxhqpX/1000207584-removebg-preview-ezgif-com-jpg-to-webp-converter.webp?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 112, sizes: { medium:1200, large:1700, family:2350 } },
+        { id: 18, name: "Behari Kebab Pizza", category: "pizza", image: "https://i.ibb.co/SwxZX1q2/images-52.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 134, sizes: { medium:1250, large:1700, family:2350 } },
+        // BURGERS
+        { id: 19, name: "Zinger Burger", category: "burger", price: 350, image: "https://images.pexels.com/photos/2983098/pexels-photo-2983098.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 189 },
+        { id: 20, name: "Chicken Patty Burger", category: "burger", price: 270, image: "https://images.pexels.com/photos/3219483/pexels-photo-3219483.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.3, ratingCount: 112 },
+        { id: 21, name: "Tower Burger", category: "burger", price: 550, image: "https://images.pexels.com/photos/3616956/pexels-photo-3616956.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 156 },
+        { id: 22, name: "Mighty Burger", category: "burger", price: 700, image: "https://i.ibb.co/9mL7JXk5/IMG-20260327-145441-125.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 98 },
+        { id: 23, name: "Pizza Burger", category: "burger", price: 550, image: "https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 76 },
+        { id: 24, name: "Fish Burger", category: "burger", price: 550, image: "https://i.ibb.co/0RSX4bmK/images-54.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.3, ratingCount: 89 },
+        { id: 25, name: "Tikka Burger", category: "burger", price: 300, image: "https://i.ibb.co/tTZKY9PJ/IMG-20260327-145854-410.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 134 },
+        { id: 26, name: "SK Special Burger", category: "burger", price: 500, image: "https://i.ibb.co/DfZw7FSf/images-56.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 145 },
+        // PASTA
+        { id: 27, name: "Chicken Pasta", category: "pasta", price: 500, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 134 },
+        { id: 28, name: "Chicken Cheese Pasta", category: "pasta", price: 550, image: "https://i.ibb.co/bjy2DFvz/IMG-20260327-173326-124.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 89 },
+        { id: 29, name: "Lazania Pasta", category: "pasta", price: 600, image: "https://i.ibb.co/pSPCRNb/IMG-20260327-173541-478.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 112 },
+        { id: 30, name: "Pizza Pasta", category: "pasta", price: 550, image: "https://i.ibb.co/dstj2fbN/images-58.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 78 },
+        { id: 31, name: "Karanchi Pasta", category: "pasta", price: 600, image: "https://i.ibb.co/S4ccTqrG/IMG-20260327-173943-801.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 95 },
+        // FRIES
+        { id: 32, name: "Loaded Fries", category: "fries", price: 550, image: "https://i.ibb.co/hFVBSSHn/IMG-20260327-174857-666.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 201 },
+        { id: 33, name: "Pizza Fries", category: "fries", price: 550, image: "https://i.ibb.co/PshJRF81/IMG-20260327-174337-551.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.3, ratingCount: 145 },
+        { id: 34, name: "Mayo Fries", category: "fries", price: 350, image: "https://i.ibb.co/9fPprHn/IMG-20260327-174600-813.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.2, ratingCount: 178 },
+        { id: 35, name: "Regular Fries", category: "fries", price: 300, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.1, ratingCount: 278 },
+        { id: 36, name: "Family Fries", category: "fries", price: 500, image: "https://i.ibb.co/Vc1ZTYV0/images-61.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 156 },
+        // SANDWICH
+        { id: 37, name: "Chicken Sandwich", category: "sandwich", price: 300, image: "https://i.ibb.co/WvhCvfYy/images-62.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.3, ratingCount: 145 },
+        { id: 38, name: "Club Sandwich", category: "sandwich", price: 350, image: "https://i.ibb.co/5hzvf4Qh/IMG-20260327-175729-895.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 98 },
+        { id: 39, name: "Malai Boti Sandwich", category: "sandwich", price: 500, image: "https://i.ibb.co/gMdh5KXd/IMG-20260327-175926-721.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 112 },
+        // SHAWARMA
+        { id: 40, name: "Chicken Shawarma", category: "shawarma", price: 250, image: "https://i.ibb.co/0ybTCSrm/IMG-20260327-180106-750.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 167 },
+        { id: 41, name: "Chicken Cheese Shawarma", category: "shawarma", price: 300, image: "https://i.ibb.co/WvtcXMzs/IMG-20260327-180259-739.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 134 },
+        { id: 42, name: "Zinger Shawarma", category: "shawarma", price: 350, image: "https://i.ibb.co/bfS7CR8/IMG-20260327-180442-259.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 98 },
+        { id: 43, name: "SK Special Shawarma", category: "shawarma", price: 320, image: "https://i.ibb.co/Kxxf9JY2/IMG-20260327-180624-981.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 145 },
+        // PARATHA
+        { id: 44, name: "Zinger Paratha", category: "paratha", price: 400, image: "https://i.ibb.co/RGFmWYDj/IMG-20260327-180944-954.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 78 },
+        { id: 45, name: "Chicken Paratha Roll", category: "paratha", price: 300, image: "https://i.ibb.co/nsjSRtvK/IMG-20260327-181132-746.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.3, ratingCount: 92 },
+        { id: 46, name: "SK Special Paratha", category: "paratha", price: 350, image: "https://i.ibb.co/FqVCdjWc/IMG-20260327-181318-512.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 67 },
+        { id: 47, name: "Pizza Paratha", category: "paratha", price: 400, image: "https://i.ibb.co/C344cRx7/IMG-20260327-181515-688.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 88 },
+        // DEALS
+        { id: 48, name: "SK DEAL No. 11", category: "deals", price: 530, rating: 4.8, ratingCount: 245, dealItems: ["1 Zinger Burger", "Reg. Fries", "Reg. Drink"] },
+        { id: 49, name: "SK DEAL No. 12", category: "deals", price: 700, rating: 4.7, ratingCount: 198, dealItems: ["1 Tower Burger", "Reg. Fries", "Reg. Drink"] },
+        { id: 50, name: "SK DEAL No. 13", category: "deals", price: 770, rating: 4.7, ratingCount: 167, dealItems: ["1 Mighty Burger", "Reg. Fries", "Reg. Drink"] },
+        { id: 51, name: "SK DEAL No. 14", category: "deals", price: 850, rating: 4.6, ratingCount: 134, dealItems: ["1 Small Pizza", "5 Wings", "Reg. Drink"] },
+        { id: 52, name: "SK DEAL No. 15", category: "deals", price: 610, rating: 4.7, ratingCount: 189, dealItems: ["5 Wings", "5 Nuggets", "1 Reg. Drink"] },
+        { id: 53, name: "SK DEAL No. 16", category: "deals", price: 950, rating: 4.8, ratingCount: 156, dealItems: ["1 Small Pizza", "1 Zinger Burger", "1 Ltr Drink"] },
+        { id: 54, name: "SK DEAL No. 17", category: "deals", price: 1750, rating: 4.9, ratingCount: 178, dealItems: ["3 Zinger Burger", "10 Wings", "1 Ltr Drink"] },
+        { id: 55, name: "SK DEAL No. 18", category: "deals", price: 1720, rating: 4.8, ratingCount: 201, dealItems: ["1 Medium Pizza", "2 Zinger Burger", "1 Ltr Drink"] },
+        { id: 56, name: "SK DEAL No. 19", category: "deals", price: 1200, rating: 4.7, ratingCount: 145, dealItems: ["10 Wings", "10 Nuggets", "1 Ltr Drink"] },
+        { id: 57, name: "SK DEAL No. 20", category: "deals", price: 1350, rating: 4.6, ratingCount: 123, dealItems: ["20 Wings", "1.5 Ltr Drink"] },
+        { id: 58, name: "SK DEAL No. 21", category: "deals", price: 1850, rating: 4.7, ratingCount: 112, dealItems: ["5 Zinger Burger", "1.5 Ltr Drink"] },
+        { id: 59, name: "SK DEAL No. 22", category: "deals", price: 1320, rating: 4.8, ratingCount: 134, dealItems: ["2 Zinger Burger", "1 Small Pizza", "2 Reg. Drink"] },
+        { id: 60, name: "SK DEAL No. 23", category: "deals", price: 1150, rating: 4.7, ratingCount: 156, dealItems: ["3 Zinger Burger", "1 Ltr Drink"] },
+        { id: 61, name: "SK DEAL No. 24", category: "deals", price: 1650, rating: 4.8, ratingCount: 167, dealItems: ["1 Medium Pizza", "10 Wings", "1 Ltr Drink"] },
+        { id: 62, name: "SK DEAL No. 25", category: "deals", price: 2250, rating: 4.9, ratingCount: 189, dealItems: ["1 Large Pizza", "10 Wings", "1.5 Ltr Drink"] },
+        { id: 63, name: "SK DEAL No. 26", category: "deals", price: 2400, rating: 4.8, ratingCount: 145, dealItems: ["1 Medium Pizza", "2 Zinger Burger", "10 Wings", "1.5 Ltr Drink"] },
+        { id: 64, name: "SK DEAL No. 27", category: "deals", price: 2450, rating: 4.8, ratingCount: 134, dealItems: ["1 Medium Pizza", "4 Zinger Burger", "1.5 Ltr Drink"] },
+        { id: 65, name: "SK DEAL No. 28", category: "deals", price: 2600, rating: 4.7, ratingCount: 123, dealItems: ["1 Large Pizza", "3 Zinger Burger", "1.5 Ltr Drink"] },
+        { id: 66, name: "SK DEAL No. 29", category: "deals", price: 2450, rating: 4.8, ratingCount: 112, dealItems: ["5 Zinger Burger", "10 Wings", "1.5 Ltr Drink"] },
+        { id: 67, name: "SK DEAL No. 30", category: "deals", price: 3000, rating: 4.9, ratingCount: 178, dealItems: ["1 Family Pizza", "3 Zinger Burger", "1.5 Ltr Drink"] }
+    ];
+
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    let userRatings = JSON.parse(localStorage.getItem('userRatings')) || {};
+    let currentCategory = "popular";
+    let showingFavorites = false;
+    let selectedSizes = {};
+
+    const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23FFE0B5%22/%3E%3Ctext x=%2250%22 y=%2255%22 font-size=%2214%22 text-anchor=%22middle%22 fill=%22%23FF6B3D%22%3ESK%3C/text%3E%3C/svg%3E";
+    const RESTAURANT_PHONE = "923446594925";
+
+    function formatRatingCount(count) {
+        if (count >= 1000) return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+        return count.toString();
+    }
+
+    function getTop2PerCategory() {
+        const categories = ["pizza", "burger", "pasta", "fries", "sandwich", "shawarma", "paratha", "deals"];
+        let popularItems = [];
+        for (let cat of categories) {
+            const catItems = menuItems.filter(item => item.category === cat);
+            const sorted = [...catItems].sort((a, b) => {
+                if (b.rating !== a.rating) return b.rating - a.rating;
+                return b.ratingCount - a.ratingCount;
+            });
+            popularItems.push(...sorted.slice(0, 2));
+        }
+        return popularItems;
+    }
+
+    function getPopularItems() { return getTop2PerCategory(); }
+
+    function animateRating(itemId, newRating) {
+        const starsDiv = document.querySelector(`.stars[data-item-id="${itemId}"]`);
+        if (!starsDiv) return;
+        const valueEl = starsDiv.parentElement.querySelector(".rating-value");
+        if (!valueEl) return;
+        let current = parseFloat(valueEl.innerText) || 0;
+        const step = (newRating - current) / 20;
+        let count = 0;
+        const interval = setInterval(() => {
+            current += step;
+            count++;
+            if (count >= 20 || Math.abs(current - newRating) < 0.01) {
+                current = newRating;
+                clearInterval(interval);
+            }
+            valueEl.innerText = current.toFixed(1);
+        }, 20);
+    }
+
+    async function updateRating(itemId, newRating) {
+        try {
+            if (useFirebase && db) {
+                const ref = doc(db, "ratings", String(itemId));
+                const snap = await getDoc(ref);
+                let total = 0, count = 0;
+                if (snap.exists()) { total = snap.data().total; count = snap.data().count; }
+                total += newRating;
+                count += 1;
+                await setDoc(ref, { total, count });
+                const avg = total / count;
+                const item = menuItems.find(i => i.id === itemId);
+                item.rating = avg;
+                item.ratingCount = count;
+                animateRating(itemId, avg);
+                renderMenu();
+                return;
+            }
+        } catch (e) { console.log("Firebase error, using localStorage fallback."); }
+
+        const item = menuItems.find(i => i.id === itemId);
+        const oldUserRating = userRatings[itemId] || 0;
+        const totalRatingSum = (item.rating * item.ratingCount) - oldUserRating + newRating;
+        if (oldUserRating === 0) item.ratingCount++;
+        item.rating = totalRatingSum / item.ratingCount;
+        userRatings[itemId] = newRating;
+        localStorage.setItem('userRatings', JSON.stringify(userRatings));
+        animateRating(itemId, item.rating);
+        renderMenu();
+    }
+
+    async function loadRatings() {
+        try {
+            if (useFirebase && db) {
+                const snapshot = await getDocs(collection(db, "ratings"));
+                snapshot.forEach(docSnap => {
+                    const id = parseInt(docSnap.id);
+                    const data = docSnap.data();
+                    const item = menuItems.find(i => i.id === id);
+                    if (item) { item.rating = data.total / data.count; item.ratingCount = data.count; }
+                });
+            }
+        } catch (e) { console.log("Using local ratings"); }
+        renderMenu();
+    }
+
+    function renderStars(itemId, currentRating, ratingCount) {
+        const fullStars = Math.floor(currentRating);
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) starsHtml += `<i class="fas fa-star" data-rating="${i}" data-id="${itemId}"></i>`;
+            else starsHtml += `<i class="far fa-star" data-rating="${i}" data-id="${itemId}"></i>`;
+        }
+        const formattedCount = formatRatingCount(ratingCount);
+        return `<div class="rating"><div class="stars" data-item-id="${itemId}">${starsHtml}</div><span class="rating-value">${currentRating.toFixed(1)}</span><span class="rating-count">(${formattedCount})</span></div>`;
+    }
+
+    function toggleFavorite(itemId) {
+        if (favorites.includes(itemId)) favorites = favorites.filter(id => id !== itemId);
+        else favorites.push(itemId);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        renderMenu();
+        updateFavoriteHeaderIcon();
+    }
+
+    function updateFavoriteHeaderIcon() {
+        const headerFav = document.getElementById('favoriteHeaderIcon');
+        if (headerFav) showingFavorites ? headerFav.classList.add('active') : headerFav.classList.remove('active');
+    }
+
+    function selectSize(itemId, sizeKey) { selectedSizes[itemId] = sizeKey; renderMenu(); }
+
+    function renderMenu() {
+        let filtered = [];
+        if (showingFavorites) filtered = menuItems.filter(i => favorites.includes(i.id));
+        else if (currentCategory === 'popular') filtered = getPopularItems();
+        else filtered = menuItems.filter(i => i.category === currentCategory);
+
+        const grid = document.getElementById('menuGrid');
+        if (filtered.length === 0) { grid.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">No items found 😢</div>'; return; }
+
+        grid.innerHTML = filtered.map(item => {
+            let priceHtml = '', sizeHtml = '', dealHtml = '';
+            let itemImage = item.image;
+            if (item.category === 'deals') itemImage = FALLBACK_IMAGE;
+
+            if (item.sizes) {
+                sizeHtml = `<div class="size-options">${Object.keys(item.sizes).map(sizeKey => `<button class="size-btn ${selectedSizes[item.id] === sizeKey ? 'selected' : ''}" data-id="${item.id}" data-size="${sizeKey}">${getSizeDisplayName(sizeKey)}</button>`).join('')}</div>`;
+                let defaultPrice = item.sizes.small || Object.values(item.sizes)[0];
+                priceHtml = `<span class="price">PKR ${selectedSizes[item.id] ? item.sizes[selectedSizes[item.id]] : defaultPrice}</span>`;
+            } else {
+                priceHtml = `<span class="price">PKR ${item.price}</span>`;
+            }
+            if (item.dealItems) dealHtml = `<div class="deal-items">${item.dealItems.map(d => `<span>• ${d}</span>`).join('')}</div>`;
+            const isFav = favorites.includes(item.id);
+            return `
+                <div class="food-card">
+                    <img class="card-img" src="${itemImage}" alt="${item.name}" loading="lazy" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}'">
+                    <div class="card-content">
+                        <div class="card-header-row"><span class="item-name">${item.name}</span>${priceHtml}</div>
+                        ${renderStars(item.id, item.rating, item.ratingCount)}
+                        <div class="delivery-info"><i class="fas fa-motorcycle"></i> 25-35 min delivery <i class="fas fa-truck"></i> Free over PKR 1000</div>
+                        ${dealHtml}${sizeHtml}
+                        <div class="action-buttons">
+                            <button class="whatsapp-btn" data-phone="${RESTAURANT_PHONE}"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                            <button class="call-btn" data-phone="${RESTAURANT_PHONE}"><i class="fas fa-phone-alt"></i> Call</button>
+                            <button class="favorite-card-btn ${isFav ? 'active' : ''}" data-fav-id="${item.id}"><i class="fas fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+
+        document.querySelectorAll('.stars i').forEach(star => {
+            star.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await updateRating(parseInt(star.dataset.id), parseInt(star.dataset.rating));
+            });
+        });
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectSize(parseInt(btn.dataset.id), btn.dataset.size);
+            });
+        });
+        document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const phone = btn.dataset.phone;
+                if (phone) window.open(`https://wa.me/${phone}`, '_blank');
+            });
+        });
+        document.querySelectorAll('.call-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const phone = btn.dataset.phone;
+                if (phone) window.location.href = `tel:${phone}`;
+            });
+        });
+        document.querySelectorAll('.favorite-card-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFavorite(parseInt(btn.dataset.favId));
+            });
+        });
+    }
+
+    function resetToHome() {
+        showingFavorites = false;
+        currentCategory = 'popular';
+        selectedSizes = {};
+        document.querySelectorAll('.cat-item').forEach(cat => {
+            if (cat.dataset.cat === 'popular') cat.classList.add('active');
+            else cat.classList.remove('active');
+        });
+        updateFavoriteHeaderIcon();
+        renderMenu();
+    }
+
+    // Menu overlay
+    let menuOpen = false;
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuBtn = document.getElementById('menuBtn');
+
+    function openMenu() { if (!menuOpen) { menuOpen = true; menuOverlay.style.display = 'flex'; history.pushState({ menuOpen: true }, ''); } }
+    function closeMenu() { if (menuOpen) { menuOpen = false; menuOverlay.style.display = 'none'; } }
+    menuBtn.addEventListener('click', (e) => { e.stopPropagation(); if (menuOpen) closeMenu(); else openMenu(); });
+    menuOverlay.addEventListener('click', (e) => { if (e.target === menuOverlay) closeMenu(); });
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const action = item.dataset.action;
+            closeMenu();
+            switch (action) {
+                case 'home': resetToHome(); break;
+                case 'more-apps': window.open('https://play.google.com/store/apps/developer?id=KAG', '_blank'); break;
+                case 'rate-us': window.open('https://play.google.com/store/apps/details?id=com.skpizza.app', '_blank'); break;
+                case 'policy': window.open('https://www.kaeducator.com/p/app-policy.html', '_blank'); break;
+            }
+        });
+    });
+
+    window.addEventListener('popstate', function(event) {
+        if (menuOpen) { closeMenu(); history.pushState({ menuOpen: false }, ''); return; }
+        const confirmExit = confirm("Do you want to exit the app?");
+        if (!confirmExit) history.pushState({ menuOpen: false }, '');
+    });
+
+    function clearSearch() { renderMenu(); }
+    function initCategories() {
+        document.querySelectorAll('.cat-item').forEach(cat => {
+            cat.addEventListener('click', () => {
+                clearSearch();
+                if (showingFavorites) { showingFavorites = false; updateFavoriteHeaderIcon(); }
+                document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
+                cat.classList.add('active');
+                currentCategory = cat.dataset.cat;
+                renderMenu();
+            });
+        });
+    }
+    function initHeaderFavorite() {
+        const favIcon = document.getElementById('favoriteHeaderIcon');
+        favIcon.addEventListener('click', () => {
+            clearSearch();
+            showingFavorites = !showingFavorites;
+            updateFavoriteHeaderIcon();
+            if (showingFavorites) document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
+            else {
+                const activeCat = document.querySelector(`.cat-item[data-cat="${currentCategory}"]`);
+                if (activeCat) activeCat.classList.add('active');
+                else document.querySelector('.cat-item[data-cat="popular"]').classList.add('active');
+            }
+            renderMenu();
+        });
+    }
+    function initHeaderActions() {
+        document.getElementById('orderHeaderBtn').addEventListener('click', () => window.open('https://wa.me/923446594925?text=Hi! I want to place an order from SK PIZZA', '_blank'));
+        document.getElementById('callHeaderBtn').addEventListener('click', () => window.location.href = 'tel:0923446594925');
+    }
+    async function checkForUpdate() {
+        try {
+            const res = await fetch("https://raw.githubusercontent.com/KhadamTech/skpizza-update/main/update.json");
+            const data = await res.json();
+            const CURRENT_VERSION = 41;
+            if (data.latestVersionCode > CURRENT_VERSION) {
+                const modal = document.createElement('div');
+                modal.className = 'update-modal';
+                modal.innerHTML = `<div class="update-modal-content"><h3>${data.title || "Update Available"}</h3><p>${data.message || "Please update to continue."}</p><button id="updateNowBtn">Update Now</button></div>`;
+                document.body.appendChild(modal);
+                if (data.forceUpdate) modal.addEventListener('click', e => { if (e.target === modal) { /* block */ } });
+                document.getElementById('updateNowBtn').addEventListener('click', () => {
+                    window.open('https://play.google.com/store/apps/details?id=com.skpizza.app', '_blank');
+                    if (!data.forceUpdate) modal.remove();
+                });
+            }
+        } catch(e) { console.warn("Update check failed", e); }
+    }
+    function getSizeDisplayName(sizeKey) {
+        const names = { small: "Small", medium: "Medium", large: "Large", family: "Family" };
+        return names[sizeKey] || sizeKey;
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        initCategories(); initHeaderFavorite(); initHeaderActions();
+        await loadRatings();
+        await checkForUpdate();
+        history.pushState({ initial: true }, '');
+    });
+</script>
+</body>
+</html>
