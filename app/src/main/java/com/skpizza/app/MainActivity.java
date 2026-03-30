@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         InterstitialAd.load(
                 this,
-                "ca-app-pub-3940256099942544/1033173712", // TEST ID
+                "ca-app-pub-7135513009907655/4679679553", // TEST ID
                 adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
