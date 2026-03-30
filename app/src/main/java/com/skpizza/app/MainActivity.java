@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         InterstitialAd.load(
                 this,
-                "ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX", // 🔥 REPLACE
+                "ca-app-pub-3940256099942544/1033173712", // 🔥 REPLACE
                 adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
