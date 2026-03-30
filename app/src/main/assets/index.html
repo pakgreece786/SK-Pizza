@@ -793,7 +793,7 @@
         try {
             const res = await fetch("https://raw.githubusercontent.com/KhadamTech/skpizza-update/main/update.json");
             const data = await res.json();
-            const CURRENT_VERSION = 41;
+            const CURRENT_VERSION = 42;
             if (data.latestVersionCode > CURRENT_VERSION) {
                 const modal = document.createElement('div');
                 modal.className = 'update-modal';
