@@ -9,11 +9,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- AdMob web code – replace with your publisher ID -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-3940256099942544"
-    crossorigin="anonymous"></script>
+    <!-- Google Ad Manager (GPT) – AdMob ads in WebView -->
+    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+    <script>
+        window.googletag = window.googletag || {cmd: []};
+
+        // ⚠️ REPLACE WITH YOUR REAL AD UNIT IDs ⚠️
+        const BANNER_AD_UNIT = 'ca-app-pub-3940256099942544/6300978111';      // e.g., '/6355419/Travel/Europe/France/Paris'
+        const INTERSTITIAL_AD_UNIT = 'ca-app-pub-3940256099942544/1033173712';
+
+        let interstitialSlot = null;
+        let bannerSlots = []; // stores current banner slots
+        let bannerIndex = 0;   // unique counter for banner IDs
+
+        googletag.cmd.push(function() {
+            interstitialSlot = googletag.defineOutOfPageSlot(INTERSTITIAL_AD_UNIT, googletag.enums.OutOfPageFormat.INTERSTITIAL);
+            if (interstitialSlot) interstitialSlot.addService(googletag.pubads());
+
+            googletag.pubads().enableSingleRequest();
+            googletag.pubads().collapseEmptyDivs(); // avoid empty spaces
+            googletag.enableServices();
+        });
+
+        function showInterstitial() {
+            if (interstitialSlot) {
+                googletag.cmd.push(function() {
+                    googletag.display(interstitialSlot);
+                });
+            } else {
+                console.warn("Interstitial slot not ready");
+            }
+        }
+
+        // Improved click counter – only count real user actions
+        let clickCounter = 0;
+        function handleGlobalClick(e) {
+            // Ignore clicks inside any banner container
+            if (e.target.closest('.banner-container')) return;
+
+            // Only count clicks on meaningful UI elements
+            if (
+                e.target.closest('.call-btn') ||
+                e.target.closest('.whatsapp-btn') ||
+                e.target.closest('.menu-item') ||
+                e.target.closest('.favorite-card-btn') ||
+                e.target.closest('.action-btn') ||
+                e.target.closest('.cat-item')
+            ) {
+                clickCounter++;
+                console.log("Click Count:", clickCounter);
+                if (clickCounter % 3 === 0) {
+                    showInterstitial();
+                }
+            }
+        }
+        document.addEventListener('click', handleGlobalClick);
+    </script>
 
     <style>
+        /* ========== ALL YOUR EXISTING STYLES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #fff5e8 0%, #ffe8d4 100%); padding: 0; }
         .app-container { max-width: 480px; margin: 0 auto; background: #ffffff; min-height: 100vh; box-shadow: 0 0 40px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
@@ -25,7 +79,6 @@
         .action-btn:active { background: rgba(255,255,255,0.35); }
         .favorite-icon { background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; color: white; border: 1px solid rgba(255,255,255,0.3); transition: background 0.2s; }
         .favorite-icon.active { background: #ffeb3b; color: #e31818; }
-        /* Menu button and overlay */
         .menu-btn {
             background: rgba(255,255,255,0.2);
             width: 40px;
@@ -106,9 +159,7 @@
             scrollbar-width: thin;
             padding-bottom: 4px;
         }
-        .hot-items-grid::-webkit-scrollbar {
-            height: 3px;
-        }
+        .hot-items-grid::-webkit-scrollbar { height: 3px; }
         .hot-item-card {
             min-width: 100px;
             background: linear-gradient(145deg, #fff9f0, #ffe6d5);
@@ -120,50 +171,13 @@
             transition: transform 0.2s;
             flex: 1;
         }
-        .hot-item-card:active {
-            transform: scale(0.97);
-        }
-        .hot-item-icon {
-            font-size: 1.6rem;
-            margin-bottom: 4px;
-            color: #FF6B3D;
-        }
-        .hot-item-name {
-            font-weight: 700;
-            font-size: 0.8rem;
-            color: #2c2c2c;
-            margin-bottom: 4px;
-        }
-        .hot-item-price {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #e31818;
-            background: rgba(255,255,255,0.8);
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 30px;
-            margin-top: 4px;
-        }
-        .size-prices {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            margin-top: 4px;
-        }
-        .size-price {
-            font-size: 0.65rem;
-            font-weight: 600;
-            background: rgba(255,107,61,0.1);
-            padding: 2px 6px;
-            border-radius: 20px;
-            color: #FF6B3D;
-            display: inline-block;
-            width: fit-content;
-        }
-        .size-price span {
-            font-weight: 800;
-        }
+        .hot-item-card:active { transform: scale(0.97); }
+        .hot-item-icon { font-size: 1.6rem; margin-bottom: 4px; color: #FF6B3D; }
+        .hot-item-name { font-weight: 700; font-size: 0.8rem; color: #2c2c2c; margin-bottom: 4px; }
+        .hot-item-price { font-size: 0.7rem; font-weight: 600; color: #e31818; background: rgba(255,255,255,0.8); display: inline-block; padding: 2px 8px; border-radius: 30px; margin-top: 4px; }
+        .size-prices { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 4px; }
+        .size-price { font-size: 0.65rem; font-weight: 600; background: rgba(255,107,61,0.1); padding: 2px 6px; border-radius: 20px; color: #FF6B3D; display: inline-block; width: fit-content; }
+        .size-price span { font-weight: 800; }
         
         .delivery-banner { background: #e8f5e9; margin: 8px 16px; padding: 10px 16px; border-radius: 20px; display: flex; align-items: center; gap: 10px; font-size: 0.7rem; font-weight: 600; color: #2e7d32; border-left: 4px solid #4caf50; }
         .categories { padding: 0 16px 20px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: thin; }
@@ -195,7 +209,6 @@
         .size-options { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
         .size-btn { background: #f5f0eb; border: none; padding: 6px 16px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; color: #666; cursor: pointer; transition: background 0.2s; }
         .size-btn.selected { background: linear-gradient(135deg, #FF6B3D, #FF3B1F); color: white; }
-        /* Two-button layout (WhatsApp + Call) + favorite */
         .action-buttons { display: flex; gap: 10px; margin-top: 12px; }
         .whatsapp-btn, .call-btn, .favorite-card-btn {
             flex: 1;
@@ -239,7 +252,6 @@
             clear: both;
         }
         
-        /* Footer styles */
         .footer {
             background: #fffaf5;
             border-top: 1px solid #ffe0cc;
@@ -247,43 +259,12 @@
             margin-top: 16px;
             text-align: center;
         }
-        .footer h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #e31818;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .footer p {
-            font-size: 0.8rem;
-            color: #5a5a5a;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-        .footer .hours {
-            background: #fff0e6;
-            padding: 12px;
-            border-radius: 20px;
-            margin: 12px 0;
-        }
-        .footer .hours p {
-            margin: 4px 0;
-            font-weight: 500;
-        }
-        .footer .address {
-            font-weight: 500;
-            color: #FF6B3D;
-            background: #fff0e6;
-            padding: 12px;
-            border-radius: 20px;
-        }
-        .footer i {
-            color: #FF6B3D;
-            margin-right: 6px;
-        }
+        .footer h4 { font-size: 1rem; font-weight: 700; color: #e31818; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .footer p { font-size: 0.8rem; color: #5a5a5a; line-height: 1.5; margin-bottom: 12px; }
+        .footer .hours { background: #fff0e6; padding: 12px; border-radius: 20px; margin: 12px 0; }
+        .footer .hours p { margin: 4px 0; font-weight: 500; }
+        .footer .address { font-weight: 500; color: #FF6B3D; background: #fff0e6; padding: 12px; border-radius: 20px; }
+        .footer i { color: #FF6B3D; margin-right: 6px; }
     </style>
 </head>
 <body>
@@ -298,7 +279,6 @@
         </div>
     </div>
 
-    <!-- Menu Overlay -->
     <div class="menu-overlay" id="menuOverlay">
         <div class="menu-panel">
             <div class="menu-item" data-action="home"><i class="fas fa-home"></i> Home</div>
@@ -308,7 +288,6 @@
         </div>
     </div>
     
-    <!-- Hot Items Section -->
     <div class="hot-items-section">
         <div class="hot-items-title">
             <i class="fas fa-fire"></i> Hot Items
@@ -378,7 +357,6 @@
     <div class="section-header"><h3>🔥 Menu</h3><span style="font-size:0.7rem; color:#FF6B3D;">⭐ Rate & Favorite</span></div>
     <div id="menuGrid" class="menu-grid"></div>
     
-    <!-- FOOTER SECTION -->
     <div class="footer">
         <h4><i class="far fa-clock"></i> Opening Hours</h4>
         <div class="hours">
@@ -618,8 +596,15 @@
 
     function selectSize(itemId, sizeKey) { selectedSizes[itemId] = sizeKey; renderMenu(); }
 
-    // Render menu with banners after every 3 items
     function renderMenu() {
+        // 🔥 DESTROY OLD ADS BEFORE RERENDERING
+        if (window.bannerSlots && window.bannerSlots.length > 0) {
+            googletag.cmd.push(function () {
+                googletag.destroySlots(window.bannerSlots);
+                window.bannerSlots = [];
+            });
+        }
+
         let filtered = [];
         if (showingFavorites) filtered = menuItems.filter(i => favorites.includes(i.id));
         else if (currentCategory === 'popular') filtered = getPopularItems();
@@ -629,6 +614,7 @@
         if (filtered.length === 0) { grid.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">No items found 😢</div>'; return; }
 
         let itemsHtml = '';
+        let counter = 0; // counts items
         for (let i = 0; i < filtered.length; i++) {
             const item = filtered[i];
             let priceHtml = '', sizeHtml = '', dealHtml = '';
@@ -659,25 +645,30 @@
                         </div>
                     </div>
                 </div>`;
+            counter++;
             // Insert banner after every 3 items (except last)
-            if ((i + 1) % 3 === 0 && i !== filtered.length - 1) {
-                itemsHtml += `
-                    <div class="banner-container">
-                        <ins class="adsbygoogle"
-                             style="display:block"
-                             data-ad-client="ca-app-pub-3940256099942544"    <!-- REPLACE with your AdMob publisher ID -->
-                             data-ad-slot="6300978111"                  <!-- REPLACE with your banner ad unit slot ID -->
-                             data-ad-format="auto"
-                             data-full-width-responsive="true"></ins>
-                        <script>
-                            (adsbygoogle = window.adsbygoogle || []).push({});
-                        <\/script>
-                    </div>`;
+            if (counter % 3 === 0 && i !== filtered.length - 1) {
+                const uniqueId = `banner-${window.bannerIndex || 0}`;
+                window.bannerIndex = (window.bannerIndex || 0) + 1;
+                itemsHtml += `<div class="banner-container" id="${uniqueId}">
+                                <div class="banner-ad"></div>
+                              </div>`;
+                // Schedule slot creation after the HTML is inserted
+                setTimeout(() => {
+                    googletag.cmd.push(function() {
+                        const slot = googletag.defineSlot(BANNER_AD_UNIT, [320, 50], uniqueId);
+                        if (slot) {
+                            slot.addService(googletag.pubads());
+                            window.bannerSlots.push(slot);
+                            googletag.display(uniqueId);
+                        }
+                    });
+                }, 10);
             }
         }
         grid.innerHTML = itemsHtml;
 
-        // Reattach listeners
+        // Attach event listeners for dynamic elements
         document.querySelectorAll('.stars i').forEach(star => {
             star.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -747,18 +738,22 @@
         });
     });
 
-    // Back button handling – exit confirmation
-    window.addEventListener('popstate', function(event) {
+    // Back button handling – show interstitial and then close app
+    window.history.pushState({}, "");
+    window.addEventListener("popstate", function () {
         if (menuOpen) {
             closeMenu();
-            history.pushState({ menuOpen: false }, '');
+            history.pushState({}, "");
             return;
         }
-        const confirmExit = confirm("Do you want to exit the app?");
-        if (confirmExit) {
-            // Let the WebView close – do nothing
+        // Show interstitial before exit (optional)
+        showInterstitial();
+        // Close app (for Android WebView)
+        if (window.Android && Android.closeApp) {
+            Android.closeApp();
         } else {
-            history.pushState({ menuOpen: false }, '');
+            // fallback: try to close the window (may not work in all browsers)
+            window.close();
         }
     });
 
@@ -798,7 +793,7 @@
         try {
             const res = await fetch("https://raw.githubusercontent.com/KhadamTech/skpizza-update/main/update.json");
             const data = await res.json();
-            const CURRENT_VERSION = 42;
+            const CURRENT_VERSION = 41;
             if (data.latestVersionCode > CURRENT_VERSION) {
                 const modal = document.createElement('div');
                 modal.className = 'update-modal';
