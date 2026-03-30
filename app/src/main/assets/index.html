@@ -9,53 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- Google Ad Manager (GPT) – AdMob ads in WebView -->
-    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
-    <script>
-        window.googletag = window.googletag || {cmd: []};
-
-        // ⚠️ REPLACE WITH YOUR REAL AD UNIT IDs ⚠️
-        const BANNER_AD_UNIT = 'ca-app-pub-3940256099942544/6300978111';      // e.g., '/6355419/Travel/Europe/France/Paris'
-        const INTERSTITIAL_AD_UNIT = 'ca-app-pub-3940256099942544/1033173712';
-
-        // Pre‑define the banner slot (will be reused for multiple banners)
-        let bannerSlots = [];
-        // Interstitial slot (single)
-        let interstitialSlot = null;
-
-        googletag.cmd.push(function() {
-            // Pre‑define interstitial slot
-            interstitialSlot = googletag.defineOutOfPageSlot(INTERSTITIAL_AD_UNIT, googletag.enums.OutOfPageFormat.INTERSTITIAL);
-            if (interstitialSlot) interstitialSlot.addService(googletag.pubads());
-
-            // We'll define banner slots dynamically later
-            googletag.pubads().enableSingleRequest();
-            googletag.enableServices();
-        });
-
-        // Function to show interstitial
-        function showInterstitial() {
-            if (interstitialSlot) {
-                googletag.cmd.push(function() {
-                    googletag.display(interstitialSlot);
-                });
-            } else {
-                console.warn("Interstitial slot not ready");
-            }
-        }
-
-        // Click counter for interstitial (every 3 clicks)
-        let clickCounter = 0;
-        function handleGlobalClick(e) {
-            // Ignore clicks inside any banner container
-            if (e.target.closest('.banner-container')) return;
-            clickCounter++;
-            if (clickCounter % 3 === 0) {
-                showInterstitial();
-            }
-        }
-        document.addEventListener('click', handleGlobalClick);
-    </script>
+    <!-- AdMob web code (AdSense) – replace with your AdMob publisher ID -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+    crossorigin="anonymous"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -273,7 +229,7 @@
         .update-modal-content p { font-size: 0.9rem; color: #555; margin-bottom: 24px; }
         .update-modal-content button { background: #e31818; color: white; border: none; padding: 12px 24px; border-radius: 60px; font-weight: 700; font-size: 0.9rem; cursor: pointer; width: 100%; }
         
-        /* Ad banner container */
+        /* Banner container for ads inside WebView */
         .banner-container {
             text-align: center;
             background: #f9f9f9;
@@ -281,13 +237,6 @@
             margin: 12px 0;
             border-radius: 12px;
             clear: both;
-        }
-        .banner-ad {
-            min-height: 50px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         
         /* Footer styles */
@@ -480,7 +429,7 @@
         { id: 5, name: "Hot & Spicy Pizza", category: "pizza", image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 6, name: "Marian Pizza", category: "pizza", image: "https://i.ibb.co/ymJkV41c/margherita-pizza-1678735925129-1280.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 112, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 7, name: "Chicken Pizza", category: "pizza", image: "https://images.pexels.com/photos/2762942/pexels-photo-2762942.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 178, sizes: { small:500, medium:1000, large:1500, family:1900 } },
-        { id: 8, name: "Cheese Lover Pizza", category: "pizza", image: "https://i.ibb.co/GQvpfQ7p/images-19.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 312, sizes: { small:500, medium:1000, large:1500, family:1800 } },
+        { id: 8, name: "Cheese Lover Pizza", category: "pizza", image: "https://i.ibb.co/GQvpfQp7/images-19.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 312, sizes: { small:500, medium:1000, large:1500, family:1800 } },
         { id: 9, name: "Chicken Achari Pizza", category: "pizza", image: "https://i.ibb.co/4w7yPnwC/images-20.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 76, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 10, name: "Pizza Donor", category: "pizza", image: "https://images.pexels.com/photos/2619967/pexels-photo-2619967.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 11, name: "Malai Boti Pizza", category: "pizza", image: "https://i.ibb.co/G4kTJMGm/images-46.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 145, sizes: { small:650, medium:1150, large:1650, family:2100 } },
@@ -670,6 +619,7 @@
 
     function selectSize(itemId, sizeKey) { selectedSizes[itemId] = sizeKey; renderMenu(); }
 
+    // Function to render menu with banners after every 3 items
     function renderMenu() {
         let filtered = [];
         if (showingFavorites) filtered = menuItems.filter(i => favorites.includes(i.id));
@@ -681,7 +631,7 @@
 
         // Build HTML for items, inserting banners after every 3 items
         let itemsHtml = '';
-        let bannerCount = 0;
+        let bannerIndex = 0;
         for (let i = 0; i < filtered.length; i++) {
             const item = filtered[i];
             let priceHtml = '', sizeHtml = '', dealHtml = '';
@@ -714,28 +664,24 @@
                 </div>`;
             // Insert banner after every 3 items (except last)
             if ((i + 1) % 3 === 0 && i !== filtered.length - 1) {
-                itemsHtml += `<div class="banner-container" id="banner-${bannerCount}">
-                                <div class="banner-ad"></div>
-                              </div>`;
-                bannerCount++;
+                itemsHtml += `
+                    <div class="banner-container">
+                        <ins class="adsbygoogle"
+                             style="display:block"
+                             data-ad-client="ca-app-pub-3940256099942544"    <!-- REPLACE with your AdMob publisher ID -->
+                             data-ad-slot="6300978111"                  <!-- REPLACE with your banner ad unit slot ID -->
+                             data-ad-format="auto"
+                             data-full-width-responsive="true"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        <\/script>
+                    </div>`;
+                bannerIndex++;
             }
         }
         grid.innerHTML = itemsHtml;
 
-        // Now define and display banner slots
-        if (bannerCount > 0) {
-            googletag.cmd.push(function() {
-                for (let i = 0; i < bannerCount; i++) {
-                    const slot = googletag.defineSlot(BANNER_AD_UNIT, [320, 50], `banner-${i}`);
-                    if (slot) {
-                        slot.addService(googletag.pubads());
-                        googletag.display(slot);
-                    }
-                }
-            });
-        }
-
-        // Attach event listeners for dynamic elements
+        // Re‑attach event listeners for dynamic elements
         document.querySelectorAll('.stars i').forEach(star => {
             star.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -782,7 +728,7 @@
         renderMenu();
     }
 
-    // Menu overlay
+    // Menu overlay logic
     let menuOpen = false;
     const menuOverlay = document.getElementById('menuOverlay');
     const menuBtn = document.getElementById('menuBtn');
@@ -805,7 +751,7 @@
         });
     });
 
-    // Back button handling – show exit confirmation
+    // Back button handling – exit confirmation
     window.addEventListener('popstate', function(event) {
         if (menuOpen) {
             closeMenu();
@@ -814,9 +760,8 @@
         }
         const confirmExit = confirm("Do you want to exit the app?");
         if (confirmExit) {
-            // Let the WebView close – do not push new state
+            // Let the WebView close – do nothing
         } else {
-            // User cancelled, push a new state to prevent the popstate from exiting
             history.pushState({ menuOpen: false }, '');
         }
     });
@@ -857,7 +802,7 @@
         try {
             const res = await fetch("https://raw.githubusercontent.com/KhadamTech/skpizza-update/main/update.json");
             const data = await res.json();
-            const CURRENT_VERSION = 42;
+            const CURRENT_VERSION = 41;
             if (data.latestVersionCode > CURRENT_VERSION) {
                 const modal = document.createElement('div');
                 modal.className = 'update-modal';
@@ -884,4 +829,4 @@
     });
 </script>
 </body>
-</html>
+    </html>
