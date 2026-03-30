@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.gms.ads.nativead.NativeAdView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/native_ad_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="#FFF5E8"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Ad Label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ad"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#FF6B3D"
+            android:paddingBottom="4dp"/>
+
+        <!-- Headline -->
+        <TextView
+            android:id="@+id/ad_headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ad Title"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000"/>
+
+        <!-- Body -->
+        <TextView
+            android:id="@+id/ad_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ad description"
+            android:textSize="14sp"
+            android:textColor="#555"
+            android:paddingTop="4dp"/>
+
+        <!-- CTA Button -->
+        <Button
+            android:id="@+id/ad_call_to_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Install"
+            android:layout_marginTop="8dp"
+            android:background="#FF6B3D"
+            android:textColor="#FFFFFF"/>
+
+    </LinearLayout>
+
+</com.google.android.gms.ads.nativead.NativeAdView>
