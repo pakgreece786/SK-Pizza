@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- AdMob web code (AdSense) – replace with your AdMob publisher ID -->
+    <!-- AdMob web code – replace with your publisher ID -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-3940256099942544"
     crossorigin="anonymous"></script>
 
@@ -229,7 +229,7 @@
         .update-modal-content p { font-size: 0.9rem; color: #555; margin-bottom: 24px; }
         .update-modal-content button { background: #e31818; color: white; border: none; padding: 12px 24px; border-radius: 60px; font-weight: 700; font-size: 0.9rem; cursor: pointer; width: 100%; }
         
-        /* Banner container for ads inside WebView */
+        /* Banner container for in-feed ads */
         .banner-container {
             text-align: center;
             background: #f9f9f9;
@@ -396,7 +396,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Firebase Config (same as before)
     const firebaseConfig = {
         apiKey: "AIzaSyAI5YMKKFJFEqwY8fXJalRkSbbDkB5toUs",
         authDomain: "sk-pizza.firebaseapp.com",
@@ -429,7 +428,7 @@
         { id: 5, name: "Hot & Spicy Pizza", category: "pizza", image: "https://images.pexels.com/photos/2147491/pexels-photo-2147491.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 6, name: "Marian Pizza", category: "pizza", image: "https://i.ibb.co/ymJkV41c/margherita-pizza-1678735925129-1280.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 112, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 7, name: "Chicken Pizza", category: "pizza", image: "https://images.pexels.com/photos/2762942/pexels-photo-2762942.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.6, ratingCount: 178, sizes: { small:500, medium:1000, large:1500, family:1900 } },
-        { id: 8, name: "Cheese Lover Pizza", category: "pizza", image: "https://i.ibb.co/GQvpfQp7/images-19.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 312, sizes: { small:500, medium:1000, large:1500, family:1800 } },
+        { id: 8, name: "Cheese Lover Pizza", category: "pizza", image: "https://i.ibb.co/GQvpfQ7p/images-19.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.8, ratingCount: 312, sizes: { small:500, medium:1000, large:1500, family:1800 } },
         { id: 9, name: "Chicken Achari Pizza", category: "pizza", image: "https://i.ibb.co/4w7yPnwC/images-20.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.5, ratingCount: 76, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 10, name: "Pizza Donor", category: "pizza", image: "https://images.pexels.com/photos/2619967/pexels-photo-2619967.jpeg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.4, ratingCount: 89, sizes: { small:500, medium:1000, large:1500, family:1900 } },
         { id: 11, name: "Malai Boti Pizza", category: "pizza", image: "https://i.ibb.co/G4kTJMGm/images-46.jpg?auto=compress&cs=tinysrgb&w=400&h=280&fit=crop", rating: 4.7, ratingCount: 145, sizes: { small:650, medium:1150, large:1650, family:2100 } },
@@ -619,7 +618,7 @@
 
     function selectSize(itemId, sizeKey) { selectedSizes[itemId] = sizeKey; renderMenu(); }
 
-    // Function to render menu with banners after every 3 items
+    // Render menu with banners after every 3 items
     function renderMenu() {
         let filtered = [];
         if (showingFavorites) filtered = menuItems.filter(i => favorites.includes(i.id));
@@ -629,9 +628,7 @@
         const grid = document.getElementById('menuGrid');
         if (filtered.length === 0) { grid.innerHTML = '<div style="text-align:center; padding:40px; color:#999;">No items found 😢</div>'; return; }
 
-        // Build HTML for items, inserting banners after every 3 items
         let itemsHtml = '';
-        let bannerIndex = 0;
         for (let i = 0; i < filtered.length; i++) {
             const item = filtered[i];
             let priceHtml = '', sizeHtml = '', dealHtml = '';
@@ -676,12 +673,11 @@
                             (adsbygoogle = window.adsbygoogle || []).push({});
                         <\/script>
                     </div>`;
-                bannerIndex++;
             }
         }
         grid.innerHTML = itemsHtml;
 
-        // Re‑attach event listeners for dynamic elements
+        // Reattach listeners
         document.querySelectorAll('.stars i').forEach(star => {
             star.addEventListener('click', async (e) => {
                 e.stopPropagation();
@@ -728,7 +724,7 @@
         renderMenu();
     }
 
-    // Menu overlay logic
+    // Menu overlay
     let menuOpen = false;
     const menuOverlay = document.getElementById('menuOverlay');
     const menuBtn = document.getElementById('menuBtn');
@@ -802,7 +798,7 @@
         try {
             const res = await fetch("https://raw.githubusercontent.com/KhadamTech/skpizza-update/main/update.json");
             const data = await res.json();
-            const CURRENT_VERSION = 41;
+            const CURRENT_VERSION = 42;
             if (data.latestVersionCode > CURRENT_VERSION) {
                 const modal = document.createElement('div');
                 modal.className = 'update-modal';
@@ -829,4 +825,4 @@
     });
 </script>
 </body>
-    </html>
+</html>
