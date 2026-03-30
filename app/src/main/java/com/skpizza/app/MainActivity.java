@@ -1,24 +1,29 @@
 package com.skpizza.app;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.ads.LoadAdError;
 
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
+    private AdView adView;
     private InterstitialAd interstitialAd;
     private int clickCount = 0;
 
@@ -27,63 +32,93 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize AdMob
-        MobileAds.initialize(this);
+        // ✅ AdMob Init
+        MobileAds.initialize(this, initializationStatus -> {});
 
-        // Load the first interstitial
+        // ✅ Banner Ad
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
+        // ✅ Load Interstitial
         loadInterstitialAd();
 
-        // WebView setup
+        // ✅ WebView Setup
         webView = findViewById(R.id.webview);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setAllowFileAccess(true);
-        webSettings.setAllowContentAccess(true);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setUseWideViewPort(true);
+        WebSettings ws = webView.getSettings();
+
+        ws.setJavaScriptEnabled(true);
+        ws.setDomStorageEnabled(true);
+        ws.setAllowFileAccess(true);
+        ws.setAllowContentAccess(true);
+        ws.setLoadWithOverviewMode(true);
+        ws.setUseWideViewPort(true);
 
         webView.setWebChromeClient(new WebChromeClient());
+
+        // 🔥 CONNECT HTML → ANDROID
+        webView.addJavascriptInterface(new JSBridge(), "Android");
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+
                 String url = request.getUrl().toString();
 
-                // WhatsApp & call links
+                // WhatsApp / Call
                 if (url.startsWith("https://wa.me/") || url.startsWith("tel:")) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    handleClick();
                     return true;
                 }
 
-                // Play Store links
+                // Play Store
                 if (url.contains("play.google.com")) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    handleClick();
                     return true;
                 }
 
-                // Count clicks → show interstitial every 3rd URL click
-                clickCount++;
-                if (clickCount % 3 == 0) {
-                    showInterstitialAd();
-                }
+                // Count normal clicks
+                handleClick();
 
-                return false; // let WebView load
+                return false;
             }
         });
 
-        // Load the HTML from assets
         webView.loadUrl("file:///android_asset/index.html");
     }
 
     // =========================
-    // Interstitial Ad Methods
+    // CLICK HANDLER (GLOBAL)
+    // =========================
+    private void handleClick() {
+        clickCount++;
+
+        if (clickCount % 3 == 0) {
+            showInterstitialAd();
+        }
+    }
+
+    // =========================
+    // JS BRIDGE (FROM HTML)
+    // =========================
+    public class JSBridge {
+        @JavascriptInterface
+        public void notifyClick() {
+            runOnUiThread(() -> handleClick());
+        }
+    }
+
+    // =========================
+    // INTERSTITIAL ADS
     // =========================
     private void loadInterstitialAd() {
         AdRequest adRequest = new AdRequest.Builder().build();
 
         InterstitialAd.load(
                 this,
-                "ca-app-pub-3940256099942544/1033173712", // 🔥 REPLACE with your AdMob interstitial unit ID
+                "ca-app-pub-3940256099942544/1033173712", // TEST ID
                 adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
@@ -106,14 +141,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // =========================
-    // Back Button Handling
+    // BACK BUTTON (WITH EXIT POPUP)
     // =========================
     @Override
     public void onBackPressed() {
+
         if (webView.canGoBack()) {
             webView.goBack();
-        } else {
-            super.onBackPressed();
+            return;
         }
+
+        // 🔥 EXIT CONFIRM DIALOG
+        new AlertDialog.Builder(this)
+                .setTitle("Exit App")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+
+                    showInterstitialAd();
+
+                    // small delay before exit
+                    webView.postDelayed(() -> finish(), 500);
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 }
