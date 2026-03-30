@@ -23,7 +23,7 @@
         <!-- ✅ AdMob App ID (KEEP TEST FOR NOW) -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-7135513009907655~5105316855"/>
 
         <!-- 🚀 Splash -->
         <activity
